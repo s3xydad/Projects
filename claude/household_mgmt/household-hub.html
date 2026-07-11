@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Household Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --board: #3B4A3E;
+    --board-dark: #2E3A32;
+    --kraft: #E8DCC0;
+    --kraft-dark: #D9C9A3;
+    --paper: #FBF8F1;
+    --mustard: #D8A31A;
+    --rust: #C0532D;
+    --sage: #6F8F63;
+    --ink: #2E2B24;
+    --ink-soft: #5C574B;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Work Sans', sans-serif;
+    background: var(--board);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+    background-size: 14px 14px;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 32px 16px 60px;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 28px; }
+  header h1 {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 52px;
+    color: var(--kraft);
+    margin: 0;
+    transform: rotate(-1deg);
+  }
+  header p {
+    color: var(--kraft-dark);
+    font-size: 14px;
+    margin: 4px 0 0;
+    letter-spacing: 0.02em;
+  }
+
+  .roommates-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .roommate-chip {
+    background: var(--paper);
+    border-radius: 20px;
+    padding: 6px 14px 6px 10px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 1px 2px 0 rgba(0,0,0,0.15);
+  }
+  .roommate-chip .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .roommate-chip button {
+    border: none; background: none; color: var(--ink-soft); cursor: pointer;
+    font-size: 14px; line-height: 1; padding: 0;
+  }
+  .add-roommate {
+    display: flex; gap: 6px; align-items: center;
+  }
+  .add-roommate input {
+    border: 1px dashed var(--kraft-dark);
+    background: transparent;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--kraft);
+    width: 110px;
+  }
+  .add-roommate input::placeholder { color: var(--kraft-dark); }
+  .add-roommate button {
+    border: 1px dashed var(--kraft-dark);
+    background: transparent;
+    color: var(--kraft);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .roommate-toggle-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .roommate-toggle-btn {
+    border: none;
+    background: none;
+    color: var(--kraft-dark);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    padding: 2px 6px;
+  }
+  .roommate-toggle-btn:hover { color: var(--kraft); text-decoration: underline; }
+
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .tab {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 22px;
+    background: var(--kraft);
+    color: var(--ink-soft);
+    border: none;
+    padding: 8px 26px 6px;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    transform: translateY(2px);
+  }
+  .tab.active {
+    background: var(--paper);
+    color: var(--ink);
+    transform: translateY(0);
+  }
+
+  .board {
+    background: var(--paper);
+    border-radius: 4px 14px 14px 14px;
+    padding: 24px;
+    min-height: 320px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  }
+  .section-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+  }
+
+  /* Chores */
+  .chore-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .note {
+    background: var(--kraft);
+    border-radius: 3px;
+    padding: 14px 14px 12px;
+    position: relative;
+    box-shadow: 2px 3px 6px rgba(0,0,0,0.15);
+  }
+  .note.done { opacity: 0.55; }
+  .tape {
+    position: absolute;
+    top: -8px; left: 50%;
+    transform: translateX(-50%) rotate(-2deg);
+    width: 46px; height: 16px;
+    background: rgba(216,163,26,0.55);
+  }
+  .note .chore-name {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 4px 0 8px;
+    text-decoration: none;
+  }
+  .note.done .chore-name { text-decoration: line-through; }
+  .note-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  select.assignee {
+    border: none;
+    background: rgba(255,255,255,0.6);
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-size: 12px;
+    font-family: 'Work Sans', sans-serif;
+    max-width: 100px;
+  }
+  .icon-btn {
+    border: none; background: none; cursor: pointer; color: var(--ink-soft);
+    font-size: 16px; padding: 2px;
+  }
+  .icon-btn.check { color: var(--sage); font-size: 20px; }
+  .add-chore-row {
+    margin-top: 18px;
+    display: flex; gap: 8px;
+  }
+  .add-chore-row input {
+    flex: 1;
+    border: 1px solid #ddd6c4;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .primary-btn {
+    background: var(--sage);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .ghost-btn {
+    background: none;
+    border: 1px solid #ddd6c4;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--ink-soft);
+  }
+  .chore-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px dashed #ddd6c4;
+  }
+  .week-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  /* Meals */
+  .meal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+  .meal-day {
+    background: var(--kraft);
+    border-radius: 8px;
+    padding: 10px;
+    min-height: 110px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .meal-day.meatless { background: #DCE6D3; }
+  .meal-day .day-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .meal-day textarea {
+    flex: 1;
+    resize: none;
+    border: none;
+    background: transparent;
+    font-size: 12.5px;
+    font-family: 'Work Sans', sans-serif;
+    line-height: 1.4;
+  }
+  .meal-day .meatless-tag {
+    font-size: 10px;
+    color: #4C6B3D;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+  .meal-hint {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 16px;
+  }
+  select.recipe-select {
+    border: none;
+    background: rgba(255,255,255,0.6);
+    border-radius: 6px;
+    padding: 3px 4px;
+    font-size: 11px;
+    font-family: 'Work Sans', sans-serif;
+    margin-bottom: 6px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Recipe box */
+  .recipe-box {
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px dashed #ddd6c4;
+  }
+  .recipe-section { margin-bottom: 16px; }
+  .recipe-section:last-child { margin-bottom: 0; }
+  .recipe-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--sage);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+  }
+  .recipe-list { display: flex; flex-direction: column; gap: 8px; }
+  .recipe-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--kraft);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .recipe-item .recipe-title {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    color: var(--ink);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .recipe-item a.recipe-title { color: var(--rust); text-decoration: underline; }
+  .recipe-remove-btn {
+    font-size: 13px;
+    opacity: 0.35;
+    padding: 2px 4px;
+    margin-left: 4px;
+  }
+  .recipe-item:hover .recipe-remove-btn { opacity: 1; }
+  .add-recipe-row {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .add-recipe-row input {
+    min-width: 0;
+    border: 1px solid #ddd6c4;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .add-recipe-row input.recipe-title-input { flex: 1 1 160px; }
+  .add-recipe-row input.recipe-url-input { flex: 1 1 140px; }
+  .add-recipe-row select.prep-time-select {
+    min-width: 0;
+    flex: 1 1 150px;
+    border: 1px solid #ddd6c4;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-family: 'Work Sans', sans-serif;
+    background: white;
+  }
+
+  /* Errands */
+  .errand-list { display: flex; flex-direction: column; gap: 8px; }
+  .errand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--kraft);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .errand.done { opacity: 0.5; }
+  .errand.done .errand-text { text-decoration: line-through; }
+  .errand-text { flex: 1; font-size: 14px; }
+  .errand select.assignee { background: rgba(255,255,255,0.7); }
+  .add-errand-row {
+    margin-top: 14px;
+    display: flex;
+    gap: 8px;
+  }
+  .add-errand-row input {
+    flex: 1;
+    border: 1px solid #ddd6c4;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .empty-msg {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 13px;
+    padding: 30px 0;
+  }
+  .sync-note {
+    text-align: center;
+    color: var(--kraft-dark);
+    font-size: 11px;
+    margin-top: 18px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(46,58,50,0.72);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--paper);
+    border-radius: 4px 14px 14px 14px;
+    padding: 22px 24px 20px;
+    max-width: 320px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 14px 34px rgba(0,0,0,0.35);
+  }
+  .modal-box .tape {
+    position: absolute;
+    top: -8px; left: 50%;
+    transform: translateX(-50%) rotate(-2deg);
+    width: 46px; height: 16px;
+    background: rgba(216,163,26,0.55);
+  }
+  .modal-title {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 26px;
+    color: var(--ink);
+    margin: 6px 0 8px;
+    transform: rotate(-0.5deg);
+  }
+  .modal-message {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0 0 20px;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .danger-btn {
+    background: var(--rust);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>the household hub</h1>
+    <p>chores, meals & errands — shared by everyone here</p>
+  </header>
+
+  <div class="roommates-strip" id="roommatesStrip"></div>
+  <div class="roommate-toggle-row">
+    <button class="roommate-toggle-btn" id="roommateToggleBtn" onclick="toggleAddRoommate()">+ manage roommates</button>
+  </div>
+  <div class="roommates-strip" id="addRoommateRow" style="display:none;">
+    <div class="add-roommate">
+      <input id="newRoommate" placeholder="add roommate" maxlength="20">
+      <button onclick="addRoommate()">add</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="chores" onclick="switchTab('chores')">chores</button>
+    <button class="tab" data-tab="meals" onclick="switchTab('meals')">meals</button>
+    <button class="tab" data-tab="errands" onclick="switchTab('errands')">errands</button>
+  </div>
+
+  <div class="board">
+    <div id="panel-chores"></div>
+    <div id="panel-meals" style="display:none;"></div>
+    <div id="panel-errands" style="display:none;"></div>
+  </div>
+
+  <p class="sync-note">everyone who opens this hub sees the same board — changes save automatically</p>
+</div>
+
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="tape"></div>
+    <p class="modal-title" id="confirmModalTitle">are you sure?</p>
+    <p class="modal-message" id="confirmModalMessage"></p>
+    <div class="modal-actions">
+      <button class="ghost-btn" id="confirmModalCancel">cancel</button>
+      <button class="danger-btn" id="confirmModalOk">delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLORS = ['#D8A31A','#C0532D','#6F8F63','#5C7EA8','#A45D8C','#8A6D3B'];
+const DAYS = ['mon','tue','wed','thu','fri','sat','sun'];
+const PREP_TIMES = [
+  { key: 'quick', label: 'quick (< 20 min)' },
+  { key: 'medium', label: 'medium (20–45 min)' },
+  { key: 'slow', label: 'slow / long (45+ min)' },
+  { key: '', label: 'uncategorized' }
+];
+const DEFAULT_STATE = {
+  roommates: [],
+  chores: [
+    { id: 'c1', name: 'kitchen wipe-down', assignee: '', done: false },
+    { id: 'c2', name: 'take out trash/recycling', assignee: '', done: false },
+    { id: 'c3', name: 'vacuum common areas', assignee: '', done: false },
+    { id: 'c4', name: 'bathroom clean', assignee: '', done: false }
+  ],
+  meals: {
+    mon: { note: '', recipeId: '' }, tue: { note: '', recipeId: '' }, wed: { note: '', recipeId: '' },
+    thu: { note: '', recipeId: '' }, fri: { note: '', recipeId: '' }, sat: { note: '', recipeId: '' }, sun: { note: '', recipeId: '' }
+  },
+  recipes: [],
+  errands: []
+};
+let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+const STORAGE_KEY = 'household-hub-state';
+
+async function loadState() {
+  try {
+    const result = await window.storage.get(STORAGE_KEY, true);
+    if (result && result.value) {
+      state = JSON.parse(result.value);
+    }
+  } catch (e) {
+    // no saved state yet, use defaults
+  }
+  migrateState();
+  render();
+}
+
+function migrateState() {
+  if (!Array.isArray(state.recipes)) state.recipes = [];
+  state.recipes.forEach(r => { if (r.prepTime === undefined) r.prepTime = ''; });
+  DAYS.forEach(d => {
+    const m = state.meals[d];
+    if (typeof m === 'string') {
+      state.meals[d] = { note: m, recipeId: '' };
+    } else if (!m) {
+      state.meals[d] = { note: '', recipeId: '' };
+    }
+  });
+}
+
+async function saveState() {
+  try {
+    await window.storage.set(STORAGE_KEY, JSON.stringify(state), true);
+  } catch (e) {
+    console.error('save failed', e);
+  }
+}
+
+function colorFor(name) {
+  if (!name) return '#B4B2A9';
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return COLORS[Math.abs(hash) % COLORS.length];
+}
+
+function addRoommate() {
+  const input = document.getElementById('newRoommate');
+  const name = input.value.trim();
+  if (!name) return;
+  if (state.roommates.includes(name)) { input.value = ''; return; }
+  state.roommates.push(name);
+  input.value = '';
+  saveState();
+  render();
+}
+
+function removeRoommate(name) {
+  state.roommates = state.roommates.filter(r => r !== name);
+  state.chores.forEach(c => { if (c.assignee === name) c.assignee = ''; });
+  state.errands.forEach(e => { if (e.assignee === name) e.assignee = ''; });
+  saveState();
+  render();
+}
+
+function renderRoommates() {
+  const strip = document.getElementById('roommatesStrip');
+  if (state.roommates.length === 0) {
+    strip.innerHTML = '<span style="color: var(--kraft-dark); font-size: 13px;">no roommates added yet</span>';
+    return;
+  }
+  strip.innerHTML = state.roommates.map(name => `
+    <div class="roommate-chip">
+      <span class="dot" style="background:${colorFor(name)}"></span>
+      ${escapeHtml(name)}
+      <button aria-label="remove ${escapeHtml(name)}" onclick="removeRoommate('${escapeAttr(name)}')">×</button>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) { return s.replace(/'/g, "\\'"); }
+
+function assigneeOptions(current) {
+  let opts = '<option value="">unassigned</option>';
+  state.roommates.forEach(r => {
+    opts += `<option value="${escapeAttr(r)}" ${r === current ? 'selected' : ''}>${escapeHtml(r)}</option>`;
+  });
+  return opts;
+}
+
+function switchTab(tab) {
+  ['chores','meals','errands'].forEach(t => {
+    document.getElementById('panel-' + t).style.display = t === tab ? 'block' : 'none';
+    document.querySelector(`.tab[data-tab="${t}"]`).classList.toggle('active', t === tab);
+  });
+}
+
+function renderChores() {
+  const panel = document.getElementById('panel-chores');
+  const cards = state.chores.map(c => `
+    <div class="note ${c.done ? 'done' : ''}">
+      <div class="tape"></div>
+      <div class="chore-name">${escapeHtml(c.name)}</div>
+      <div class="note-row">
+        <select class="assignee" onchange="setChoreAssignee('${c.id}', this.value)">
+          ${assigneeOptions(c.assignee)}
+        </select>
+        <div>
+          <button class="icon-btn check" title="mark done" onclick="toggleChore('${c.id}')">${c.done ? '↺' : '✓'}</button>
+          <button class="icon-btn" title="remove" onclick="removeChore('${c.id}')">×</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  panel.innerHTML = `
+    <p class="section-title">this week's chores</p>
+    <div class="chore-grid">${cards || '<p class="empty-msg">no chores yet — add one below</p>'}</div>
+    <div class="add-chore-row">
+      <input id="newChore" placeholder="add a chore" maxlength="40" onkeydown="if(event.key==='Enter') addChore()">
+      <button class="primary-btn" onclick="addChore()">add</button>
+    </div>
+    <div class="chore-footer">
+      <span class="week-label">week of ${weekLabel()}</span>
+      <button class="ghost-btn" onclick="shuffleChores()">shuffle assignments</button>
+    </div>
+  `;
+}
+
+function weekLabel() {
+  const d = new Date();
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+function addChore() {
+  const input = document.getElementById('newChore');
+  const name = input.value.trim();
+  if (!name) return;
+  state.chores.push({ id: 'c' + Date.now(), name, assignee: '', done: false });
+  saveState();
+  renderChores();
+}
+
+function removeChore(id) {
+  state.chores = state.chores.filter(c => c.id !== id);
+  saveState();
+  renderChores();
+}
+
+function toggleChore(id) {
+  const c = state.chores.find(c => c.id === id);
+  if (c) c.done = !c.done;
+  saveState();
+  renderChores();
+}
+
+function setChoreAssignee(id, name) {
+  const c = state.chores.find(c => c.id === id);
+  if (c) c.assignee = name;
+  saveState();
+}
+
+function shuffleChores() {
+  if (state.roommates.length === 0) return;
+  const shuffled = [...state.roommates].sort(() => Math.random() - 0.5);
+  state.chores.forEach((c, i) => {
+    c.assignee = shuffled[i % shuffled.length];
+    c.done = false;
+  });
+  saveState();
+  renderChores();
+}
+
+function recipeOptions(current) {
+  let opts = '<option value="">no recipe linked</option>';
+  state.recipes.forEach(r => {
+    opts += `<option value="${escapeAttr(r.id)}" ${r.id === current ? 'selected' : ''}>${escapeHtml(r.title)}</option>`;
+  });
+  return opts;
+}
+
+function renderMeals() {
+  const panel = document.getElementById('panel-meals');
+  const cells = DAYS.map(d => `
+    <div class="meal-day ${d === 'mon' ? 'meatless' : ''}">
+      <div class="day-label">${d}</div>
+      <select class="recipe-select" onchange="setDayRecipe('${d}', this.value)">
+        ${recipeOptions(state.meals[d].recipeId)}
+      </select>
+      <textarea placeholder="${d === 'mon' ? 'meatless monday idea' : 'plan a meal'}" onblur="setMeal('${d}', this.value)">${escapeHtml(state.meals[d].note || '')}</textarea>
+      ${d === 'mon' ? '<div class="meatless-tag">meatless monday</div>' : ''}
+    </div>
+  `).join('');
+
+  const recipeSections = PREP_TIMES.map(pt => {
+    const items = state.recipes.filter(r => (r.prepTime || '') === pt.key);
+    if (items.length === 0) return '';
+    const rows = items.map(r => `
+      <div class="recipe-item">
+        ${r.url
+          ? `<a class="recipe-title" href="${escapeAttr(r.url)}" target="_blank" rel="noopener">${escapeHtml(r.title)}</a>`
+          : `<span class="recipe-title">${escapeHtml(r.title)}</span>`}
+        <button class="icon-btn recipe-remove-btn" title="remove" onclick="removeRecipe('${r.id}')">×</button>
+      </div>
+    `).join('');
+    return `
+      <div class="recipe-section">
+        <p class="recipe-section-label">${pt.label}</p>
+        <div class="recipe-list">${rows}</div>
+      </div>
+    `;
+  }).join('');
+
+  panel.innerHTML = `
+    <p class="section-title">this week's meals</p>
+    <div class="meal-grid">${cells}</div>
+    <p class="meal-hint">tip: ask me for meal ideas any time — Mediterranean or Italian weeknight dinners for three, quick and vegetable-forward, and I'll drop suggestions in here.</p>
+
+    <div class="recipe-box">
+      <p class="section-title">recipe box</p>
+      ${recipeSections || '<p class="empty-msg">no recipes saved yet — add one below, then link it to a day above</p>'}
+      <div class="add-recipe-row">
+        <input id="newRecipeTitle" class="recipe-title-input" placeholder="recipe name" maxlength="60" onkeydown="if(event.key==='Enter') addRecipe()">
+        <input id="newRecipeUrl" class="recipe-url-input" placeholder="link (optional)" maxlength="300" onkeydown="if(event.key==='Enter') addRecipe()">
+        <select id="newRecipePrepTime" class="prep-time-select">
+          ${PREP_TIMES.filter(pt => pt.key).map(pt => `<option value="${pt.key}">${pt.label}</option>`).join('')}
+        </select>
+        <button class="primary-btn" onclick="addRecipe()">add</button>
+      </div>
+    </div>
+  `;
+}
+
+function setMeal(day, value) {
+  state.meals[day].note = value;
+  saveState();
+}
+
+function setDayRecipe(day, recipeId) {
+  state.meals[day].recipeId = recipeId;
+  saveState();
+}
+
+function addRecipe() {
+  const titleInput = document.getElementById('newRecipeTitle');
+  const urlInput = document.getElementById('newRecipeUrl');
+  const prepTimeSelect = document.getElementById('newRecipePrepTime');
+  const title = titleInput.value.trim();
+  if (!title) return;
+  let url = urlInput.value.trim();
+  if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+  const prepTime = prepTimeSelect.value;
+  state.recipes.push({ id: 'r' + Date.now(), title, url, prepTime });
+  titleInput.value = '';
+  urlInput.value = '';
+  saveState();
+  renderMeals();
+}
+
+function confirmModal(message) {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('confirmModal');
+    document.getElementById('confirmModalMessage').textContent = message;
+    const okBtn = document.getElementById('confirmModalOk');
+    const cancelBtn = document.getElementById('confirmModalCancel');
+
+    const close = result => {
+      overlay.classList.remove('open');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      overlay.removeEventListener('click', onOverlay);
+      document.removeEventListener('keydown', onKey);
+      resolve(result);
+    };
+    const onOk = () => close(true);
+    const onCancel = () => close(false);
+    const onOverlay = e => { if (e.target === overlay) close(false); };
+    const onKey = e => { if (e.key === 'Escape') close(false); };
+
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    overlay.addEventListener('click', onOverlay);
+    document.addEventListener('keydown', onKey);
+    overlay.classList.add('open');
+  });
+}
+
+async function removeRecipe(id) {
+  const recipe = state.recipes.find(r => r.id === id);
+  if (!recipe) return;
+  const ok = await confirmModal(`Delete "${recipe.title}" from the recipe box? This can't be undone.`);
+  if (!ok) return;
+  state.recipes = state.recipes.filter(r => r.id !== id);
+  DAYS.forEach(d => { if (state.meals[d].recipeId === id) state.meals[d].recipeId = ''; });
+  saveState();
+  renderMeals();
+}
+
+function renderErrands() {
+  const panel = document.getElementById('panel-errands');
+  const items = state.errands.map(e => `
+    <div class="errand ${e.done ? 'done' : ''}">
+      <button class="icon-btn check" onclick="toggleErrand('${e.id}')">${e.done ? '↺' : '✓'}</button>
+      <span class="errand-text">${escapeHtml(e.text)}</span>
+      <select class="assignee" onchange="setErrandAssignee('${e.id}', this.value)">
+        ${assigneeOptions(e.assignee)}
+      </select>
+      <button class="icon-btn" onclick="removeErrand('${e.id}')">×</button>
+    </div>
+  `).join('');
+
+  panel.innerHTML = `
+    <p class="section-title">errands & to-dos</p>
+    <div class="errand-list">${items || '<p class="empty-msg">no errands yet — add one below</p>'}</div>
+    <div class="add-errand-row">
+      <input id="newErrand" placeholder="add an errand" maxlength="60" onkeydown="if(event.key==='Enter') addErrand()">
+      <button class="primary-btn" onclick="addErrand()">add</button>
+    </div>
+  `;
+}
+
+function addErrand() {
+  const input = document.getElementById('newErrand');
+  const text = input.value.trim();
+  if (!text) return;
+  state.errands.push({ id: 'e' + Date.now(), text, assignee: '', done: false });
+  saveState();
+  renderErrands();
+}
+
+function removeErrand(id) {
+  state.errands = state.errands.filter(e => e.id !== id);
+  saveState();
+  renderErrands();
+}
+
+function toggleErrand(id) {
+  const e = state.errands.find(e => e.id === id);
+  if (e) e.done = !e.done;
+  saveState();
+  renderErrands();
+}
+
+function setErrandAssignee(id, name) {
+  const e = state.errands.find(e => e.id === id);
+  if (e) e.assignee = name;
+  saveState();
+}
+
+function render() {
+  renderRoommates();
+  renderChores();
+  renderMeals();
+  renderErrands();
+}
+
+document.getElementById('newRoommate').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addRoommate();
+});
+
+const ADD_ROOMMATE_VISIBLE_KEY = 'household-hub-show-add-roommate';
+let addRoommateVisibleFallback = false;
+
+function isAddRoommateVisible() {
+  try {
+    return localStorage.getItem(ADD_ROOMMATE_VISIBLE_KEY) === 'true';
+  } catch (e) {
+    return addRoommateVisibleFallback;
+  }
+}
+
+function toggleAddRoommate() {
+  const next = !isAddRoommateVisible();
+  try {
+    localStorage.setItem(ADD_ROOMMATE_VISIBLE_KEY, String(next));
+  } catch (e) {
+    addRoommateVisibleFallback = next;
+  }
+  applyAddRoommateVisibility();
+}
+
+function applyAddRoommateVisibility() {
+  const visible = isAddRoommateVisible();
+  document.getElementById('addRoommateRow').style.display = visible ? 'flex' : 'none';
+  document.getElementById('roommateToggleBtn').textContent = visible ? '− hide add roommate' : '+ manage roommates';
+}
+
+try {
+  applyAddRoommateVisibility();
+} catch (e) {
+  console.error('roommate toggle init failed', e);
+}
+loadState();
+</script>
+</body>
+</html>
