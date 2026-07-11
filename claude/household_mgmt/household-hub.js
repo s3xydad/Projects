@@ -366,6 +366,11 @@ document.addEventListener('roommate-removed', e => {
   renderErrands();
 });
 
+document.addEventListener('roommates-changed', () => {
+  renderChores();
+  renderErrands();
+});
+
 async function init() {
   await Promise.all([initShared(), loadState()]);
   const hadLegacyRoommates = 'roommates' in state;
