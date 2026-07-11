@@ -1,0 +1,244 @@
+/* Shared theme + site chrome — used by every page (household hub, and future pages) */
+
+:root {
+  --board: #3B4A3E;
+  --board-dark: #2E3A32;
+  --kraft: #E8DCC0;
+  --kraft-dark: #D9C9A3;
+  --paper: #FBF8F1;
+  --mustard: #D8A31A;
+  --rust: #C0532D;
+  --sage: #6F8F63;
+  --ink: #2E2B24;
+  --ink-soft: #5C574B;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Work Sans', sans-serif;
+  background: var(--board);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+  background-size: 14px 14px;
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 32px 16px 60px;
+}
+.wrap { max-width: 880px; margin: 0 auto; }
+header { text-align: center; margin-bottom: 28px; }
+header h1 {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 52px;
+  color: var(--kraft);
+  margin: 0;
+  transform: rotate(-1deg);
+}
+header p {
+  color: var(--kraft-dark);
+  font-size: 14px;
+  margin: 4px 0 0;
+  letter-spacing: 0.02em;
+}
+
+/* Roommates strip (shared across pages) */
+.roommates-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.roommate-chip {
+  background: var(--paper);
+  border-radius: 20px;
+  padding: 6px 14px 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 1px 2px 0 rgba(0,0,0,0.15);
+}
+.roommate-chip .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.roommate-chip button {
+  border: none; background: none; color: var(--ink-soft); cursor: pointer;
+  font-size: 14px; line-height: 1; padding: 0;
+}
+.add-roommate {
+  display: flex; gap: 6px; align-items: center;
+}
+.add-roommate input {
+  border: 1px dashed var(--kraft-dark);
+  background: transparent;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--kraft);
+  width: 110px;
+}
+.add-roommate input::placeholder { color: var(--kraft-dark); }
+.add-roommate button {
+  border: 1px dashed var(--kraft-dark);
+  background: transparent;
+  color: var(--kraft);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.roommate-toggle-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.roommate-toggle-btn {
+  border: none;
+  background: none;
+  color: var(--kraft-dark);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.roommate-toggle-btn:hover { color: var(--kraft); text-decoration: underline; }
+
+/* Tabs + board frame (shared layout every page can reuse) */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.tab {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 22px;
+  background: var(--kraft);
+  color: var(--ink-soft);
+  border: none;
+  padding: 8px 26px 6px;
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  transform: translateY(2px);
+}
+.tab.active {
+  background: var(--paper);
+  color: var(--ink);
+  transform: translateY(0);
+}
+
+.board {
+  background: var(--paper);
+  border-radius: 4px 14px 14px 14px;
+  padding: 24px;
+  min-height: 320px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+.section-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  margin: 0 0 14px;
+}
+.empty-msg {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 13px;
+  padding: 30px 0;
+}
+.sync-note {
+  text-align: center;
+  color: var(--kraft-dark);
+  font-size: 11px;
+  margin-top: 18px;
+}
+
+/* Shared buttons */
+.icon-btn {
+  border: none; background: none; cursor: pointer; color: var(--ink-soft);
+  font-size: 16px; padding: 2px;
+}
+.icon-btn.check { color: var(--sage); font-size: 20px; }
+.primary-btn {
+  background: var(--sage);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.ghost-btn {
+  background: none;
+  border: 1px solid #ddd6c4;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.danger-btn {
+  background: var(--rust);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Sticky-note "tape" accent, reused by note cards and the modal */
+.tape {
+  position: absolute;
+  top: -8px; left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 46px; height: 16px;
+  background: rgba(216,163,26,0.55);
+}
+
+/* Confirm modal (shared) */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(46,58,50,0.72);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--paper);
+  border-radius: 4px 14px 14px 14px;
+  padding: 22px 24px 20px;
+  max-width: 320px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.35);
+}
+.modal-title {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--ink);
+  margin: 6px 0 8px;
+  transform: rotate(-0.5deg);
+}
+.modal-message {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

@@ -1,0 +1,243 @@
+/* household-hub.html page-specific styles (chores / meals / recipe box / errands) */
+
+/* Chores */
+.chore-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+.note {
+  background: var(--kraft);
+  border-radius: 3px;
+  padding: 14px 14px 12px;
+  position: relative;
+  box-shadow: 2px 3px 6px rgba(0,0,0,0.15);
+}
+.note.done { opacity: 0.55; }
+.note .chore-name {
+  font-weight: 600;
+  font-size: 15px;
+  margin: 4px 0 8px;
+  text-decoration: none;
+  cursor: pointer;
+  border-bottom: 1px dashed transparent;
+}
+.note .chore-name:hover { border-bottom-color: var(--ink-soft); }
+.note.done .chore-name { text-decoration: line-through; }
+.chore-name-input {
+  font-weight: 600;
+  font-size: 15px;
+  font-family: 'Work Sans', sans-serif;
+  margin: 4px 0 8px;
+  width: 100%;
+  border: 1px solid #ddd6c4;
+  border-radius: 4px;
+  padding: 2px 4px;
+  background: white;
+}
+.note-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+select.assignee {
+  border: none;
+  background: rgba(255,255,255,0.6);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 12px;
+  font-family: 'Work Sans', sans-serif;
+  max-width: 100px;
+}
+.add-chore-row {
+  margin-top: 18px;
+  display: flex; gap: 8px;
+}
+.add-chore-row input {
+  flex: 1;
+  border: 1px solid #ddd6c4;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+.chore-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px dashed #ddd6c4;
+}
+.week-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+/* Meals */
+.meal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+.meal-day {
+  background: var(--kraft);
+  border-radius: 8px;
+  padding: 10px;
+  min-height: 110px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.meal-day.meatless { background: #DCE6D3; }
+.meal-day .day-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+.meal-day textarea {
+  flex: 1;
+  resize: none;
+  border: none;
+  background: transparent;
+  font-size: 12.5px;
+  font-family: 'Work Sans', sans-serif;
+  line-height: 1.4;
+}
+.meal-day .meatless-tag {
+  font-size: 10px;
+  color: #4C6B3D;
+  font-weight: 500;
+  margin-top: 4px;
+}
+.meal-hint {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 16px;
+}
+select.recipe-select {
+  border: none;
+  background: rgba(255,255,255,0.6);
+  border-radius: 6px;
+  padding: 3px 4px;
+  font-size: 11px;
+  font-family: 'Work Sans', sans-serif;
+  margin-bottom: 6px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Recipe box */
+.recipe-box {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px dashed #ddd6c4;
+}
+.recipe-section { margin-bottom: 16px; }
+.recipe-section:last-child { margin-bottom: 0; }
+.recipe-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--sage);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 8px;
+}
+.recipe-list { display: flex; flex-direction: column; gap: 8px; }
+.recipe-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--kraft);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.recipe-item .recipe-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--ink);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.recipe-item a.recipe-title { color: var(--rust); text-decoration: underline; }
+.recipe-remove-btn {
+  font-size: 13px;
+  opacity: 0.35;
+  padding: 2px 4px;
+  margin-left: 4px;
+}
+.recipe-item:hover .recipe-remove-btn { opacity: 1; }
+.add-recipe-row {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.add-recipe-row input {
+  min-width: 0;
+  border: 1px solid #ddd6c4;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+.add-recipe-row input.recipe-title-input { flex: 1 1 160px; }
+.add-recipe-row input.recipe-url-input { flex: 1 1 140px; }
+.add-recipe-row select.prep-time-select {
+  min-width: 0;
+  flex: 1 1 150px;
+  border: 1px solid #ddd6c4;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: 'Work Sans', sans-serif;
+  background: white;
+}
+
+/* Errands */
+.errand-list { display: flex; flex-direction: column; gap: 8px; }
+.errand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--kraft);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.errand.done { opacity: 0.5; }
+.errand.done .errand-text { text-decoration: line-through; }
+.errand-text {
+  flex: 1;
+  font-size: 14px;
+  cursor: pointer;
+  border-bottom: 1px dashed transparent;
+}
+.errand-text:hover { border-bottom-color: var(--ink-soft); }
+.errand-text-input {
+  flex: 1;
+  font-size: 14px;
+  font-family: 'Work Sans', sans-serif;
+  border: 1px solid #ddd6c4;
+  border-radius: 4px;
+  padding: 2px 6px;
+  background: white;
+  min-width: 0;
+}
+.errand select.assignee { background: rgba(255,255,255,0.7); }
+.add-errand-row {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+}
+.add-errand-row input {
+  flex: 1;
+  border: 1px solid #ddd6c4;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
